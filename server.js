@@ -68,7 +68,6 @@ app.post('/api/notes', (req, res) => {
 
 app.delete('/api/notes/:id', (req, res) => {
     console.log('DELETE request received');
-    ("req params", req.params.id)
     fs.readFile('./db/db.json', 'utf8', (err, data) => {
         if (err) {
             console.error(err);
@@ -76,8 +75,14 @@ app.delete('/api/notes/:id', (req, res) => {
             // Convert string into JSON object
             const parsedNotes = JSON.parse(data)
             const noteArray = parsedNotes.filter(({ id }) => id !== req.params.id);
+            fs.writeFile('./db/db.json', JSON.stringify(noteArray, null, 4),
+                (writeErr) =>
+                    writeErr
+                        ? res.json('Failed deleted note!')
+                        : res.json('Successfully deleted note!')
+            );
         }
-    })
+    });
 });
 
 app.listen(PORT, () =>
